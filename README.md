@@ -18,3 +18,15 @@ npm install
 ```
 npm run server
 ```
+
+### Run Frontend
+
+```
+npm run client
+```
+
+### Run Both Server and Frontend
+
+```
+npm run dev
+```
