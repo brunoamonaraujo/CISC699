@@ -46,7 +46,12 @@ const login = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  if (user && (await bcrypt.compare(password, user.password))) {
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found");
+  }
+
+  if (await bcrypt.compare(password, user.password)) {
     res.json({
       id: user.id,
       name: user.name,
@@ -55,7 +60,7 @@ const login = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(400);
-    throw new Error("User not found");
+    throw new Error("Email or password incorrect");
   }
 });
 
@@ -67,23 +72,34 @@ const generateToken = (id, expiresIn = "7d") => {
 
 const updateUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-
-  if (!name || !email || !password) {
-    res.status(400);
-    throw new Error("Missing fields");
-  }
   const userExists = await User.findOne({ email });
   if (!userExists) {
     res.status(404);
-    throw new Error("This email doesn't exist in system");
+    throw new Error("Email not found. Please enter a valid email address");
   }
-  const salt = await bcrypt.genSalt(8);
-  const hashedPassword = await bcrypt.hash(password, salt);
-  const user = await User.updateOne({
+
+  if (!name && !password) {
+    return;
+  }
+
+  if (!name) {
+    name = userExists.name;
+  }
+
+  let hashedPassword;
+  if (!password) {
+    hashedPassword = userExists.password;
+  } else {
+    const salt = await bcrypt.genSalt(8);
+    hashedPassword = await bcrypt.hash(password, salt);
+  }
+
+  await User.updateOne({
     name,
-    email,
     password: hashedPassword,
   });
+
+  const user = await User.findOne({ email });
 
   if (user) {
     res.status(201).json({
@@ -177,14 +193,14 @@ const resetPassword = asyncHandler(async (req, res) => {
         email: user.email,
         token: generateToken(user._id),
       });
-    } else if (!user) {
-      res.status(401).json({ status: 401, message: "User not found" });
     } else if (isTokenExpired(token)) {
       res.status(401).json({
         status: 401,
         message: "This link has expired. Please get a new one",
       });
-    }
+    } else {
+      res.status(401).json({ status: 401, message: "User not found" });
+    } 
   } catch (error) {
     res.status(401).json({ status: 401, error });
   }

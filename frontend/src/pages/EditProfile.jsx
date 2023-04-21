@@ -1,4 +1,4 @@
-import { logout, update, reset } from "../features/auth/authSlice";
+import { update, reset } from "../features/auth/authSlice";
 import Spinner from "../components/Spinner";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -26,10 +26,9 @@ function EditProfile() {
     if (isError) {
       toast.error(message);
     }
-    
+
     if (isSuccess) {
-      toast.success("User successfully updated, please login again");
-      dispatch(logout());
+      toast.success("User successfully updated");
       dispatch(reset());
       navigate("/");
     }
@@ -47,13 +46,11 @@ function EditProfile() {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (!password) {
-      toast.error("Please enter the password");
-    } else if (password.length < 6) {
+    if (password && password.length < 6) {
       toast.error("The password needs to have at least 6 characters");
-    } else if (!password2) {
+    } else if (password & !password2) {
       toast.error("Please confirm the password");
-    } else if (password !== password2) {
+    } else if ((password || password2) && password !== password2) {
       toast.error("Passwords do not match");
     } else {
       const userData = {

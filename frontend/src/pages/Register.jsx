@@ -45,12 +45,10 @@ function Register() {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (!password) {
-      toast.error("Please enter the password");
+    if (!name || !email || !password || !password2) {
+      toast.error("Please enter all fields");
     } else if (password.length < 6) {
       toast.error("The password needs to have at least 6 characters");
-    } else if (!password2) {
-      toast.error("Please confirm the password");
     } else if (password !== password2) {
       toast.error("Passwords do not match");
     } else {
