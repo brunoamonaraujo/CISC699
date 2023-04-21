@@ -22,7 +22,8 @@
     "fs": "^0.0.1-security",
     "https": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.1.9"
+    "mongoose": "^6.1.9",
+    "plotly.js-dist-min": "^2.21.0"
   },
   "devDependencies": {
     "concurrently": "^7.0.0",

@@ -25,20 +25,21 @@ export const predict = createAsyncThunk(
   }
 );
 
+export const buildGraph = (ticker, dates, closePrices, meanprices) => {
+  stockService.buildGraph(ticker, dates, closePrices, meanprices);
+};
+
 export const stockSlice = createSlice({
   name: "stock",
   initialState,
-  reducer: {
-    setText: (state, action) => {
-      state.ticker = "test";
-    },
-  },
   extraReducers: (builder) => {
     builder.addCase(predict.fulfilled, (state, action) => {
+      state.stock = action.payload;
+    });
+    builder.addCase(buildGraph.fulfilled, (state, action) => {
       state.stock = action.payload;
     });
   },
 });
 
-export const { setText } = stockSlice.actions;
 export default authSlice.reducer;

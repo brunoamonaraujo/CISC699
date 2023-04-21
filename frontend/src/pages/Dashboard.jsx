@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { reset } from "../features/auth/authSlice";
 import Spinner from "../components/Spinner";
-import { predict } from "../features/stock/stockSlice";
+import { predict, buildGraph } from "../features/stock/stockSlice";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ function Dashboard() {
     (state) => state.auth
   );
 
-  var ticker = "AAPL";
+  var ticker;
 
   useEffect(() => {
     if (isError) {
@@ -35,11 +35,17 @@ function Dashboard() {
     ticker = event.target.value;
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
     try {
-      dispatch(predict(ticker));
+      const data = await dispatch(predict(ticker));
+      buildGraph(
+        data.payload.ticker,
+        data.payload.dates,
+        data.payload.closePrices,
+        data.payload.meanPrices
+      );
     } catch (error) {
-      console.log("Error occurred:", error);
+      console.log("handleClick error:", error);
     }
   };
 
@@ -60,6 +66,7 @@ function Dashboard() {
           Predict
         </button>
       </div>
+      <div id="plot"></div>
     </div>
   );
 }
