@@ -1,32 +1,34 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaSignInAlt } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { login, reset } from "../features/auth/authSlice";
+import { FaUnlockAlt } from "react-icons/fa";
+import { logout, forgotPassword, reset } from "../features/auth/authSlice";
 import Spinner from "../components/Spinner";
 
-function Login() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const { email, password } = formData;
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
+function ForgotPassword() {
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
+
+  const [formData, setFormData] = useState({
+    email: "",
+  });
+
+  const { email } = formData;
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (isError) {
       toast.error(message);
     }
 
-    if (isSuccess || user) {
+    if (isSuccess && user) {
+      toast.success("Email sent sucessfully. Please follow the instructions");
+      dispatch(logout());
+      dispatch(reset());
       navigate("/");
     }
 
@@ -42,13 +44,11 @@ function Login() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-
     const userData = {
       email,
-      password,
     };
 
-    dispatch(login(userData));
+    dispatch(forgotPassword(userData));
   };
 
   if (isLoading) {
@@ -59,9 +59,9 @@ function Login() {
     <>
       <section className="heading">
         <h1>
-          <FaSignInAlt /> Login
+          <FaUnlockAlt /> Forgot Password
         </h1>
-        <p>Login and start predicting the stock market</p>
+        <p>Please enter your email address</p>
       </section>
 
       <section className="form">
@@ -78,29 +78,14 @@ function Login() {
             />
           </div>
           <div className="form-group">
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              name="password"
-              value={password}
-              placeholder="Enter password"
-              onChange={onChange}
-            />
-          </div>
-
-          <div className="form-group">
             <button type="submit" className="btn btn-block">
               Submit
             </button>
           </div>
         </form>
-        <div className="forgot-password">
-          <Link to="/forgotPassword">Forgot Password?</Link>
-        </div>
       </section>
     </>
   );
 }
 
-export default Login;
+export default ForgotPassword;

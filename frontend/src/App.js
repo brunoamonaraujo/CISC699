@@ -6,6 +6,9 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import EditProfile from "./pages/EditProfile";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+
 function App() {
   return (
     <>
@@ -17,6 +20,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/editprofile" element={<EditProfile />} />
+            <Route path="/forgotPassword" element={<ForgotPassword />} />
+            <Route
+              path="/resetPassword/:id/:token"
+              element={<ResetPassword />}
+            />
           </Routes>
         </div>
       </Router>

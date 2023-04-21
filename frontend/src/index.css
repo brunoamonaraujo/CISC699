@@ -211,3 +211,7 @@ h3 {
 #plot {
   margin-top: 7vh;
 }
+
+.forgot-password {
+  float: right;
+}

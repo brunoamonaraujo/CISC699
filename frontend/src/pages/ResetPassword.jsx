@@ -1,23 +1,24 @@
-import { logout, update, reset } from "../features/auth/authSlice";
-import Spinner from "../components/Spinner";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FaUser } from "react-icons/fa";
+import { FaLock } from "react-icons/fa";
+import { reset, resetPassword } from "../features/auth/authSlice";
+import Spinner from "../components/Spinner";
 
-function EditProfile() {
+function ResetPassword() {
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
 
   const [formData, setFormData] = useState({
-    name: user.name,
-    email: user.email,
-    password: user.password,
+    password: "",
+    password2: "",
   });
 
-  const { name, email, password, password2 } = formData;
+  const { id, token } = useParams();
+
+  const { password, password2 } = formData;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -26,11 +27,8 @@ function EditProfile() {
     if (isError) {
       toast.error(message);
     }
-    
-    if (isSuccess) {
-      toast.success("User successfully updated, please login again");
-      dispatch(logout());
-      dispatch(reset());
+
+    if (isSuccess || user) {
       navigate("/");
     }
 
@@ -57,12 +55,12 @@ function EditProfile() {
       toast.error("Passwords do not match");
     } else {
       const userData = {
-        name,
-        email,
+        id,
+        token,
         password,
       };
 
-      dispatch(update(userData));
+      dispatch(resetPassword(userData));
     }
   };
 
@@ -74,35 +72,13 @@ function EditProfile() {
     <>
       <section className="heading">
         <h1>
-          <FaUser /> Edit Profile
+          <FaLock /> Reset Password
         </h1>
-        <p>Please edit your account</p>
+        <p>Please enter your new password</p>
       </section>
 
       <section className="form">
         <form onSubmit={onSubmit}>
-          <div className="form-group">
-            <input
-              type="text"
-              className="form-control"
-              id="name"
-              name="name"
-              value={name}
-              placeholder="Enter your name"
-              onChange={onChange}
-            />
-          </div>
-          <div className="form-group">
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              name="email"
-              value={email}
-              placeholder="Enter your email"
-              disabled
-            />
-          </div>
           <div className="form-group">
             <input
               type="password"
@@ -110,7 +86,7 @@ function EditProfile() {
               id="password"
               name="password"
               value={password}
-              placeholder="Enter password"
+              placeholder="Password"
               onChange={onChange}
             />
           </div>
@@ -136,4 +112,4 @@ function EditProfile() {
   );
 }
 
-export default EditProfile;
+export default ResetPassword;
