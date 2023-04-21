@@ -1,4 +1,3 @@
 node_modules
 .env
 *.csv
-App/stock.py
