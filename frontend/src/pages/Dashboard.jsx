@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { reset } from "../features/auth/authSlice";
 import Spinner from "../components/Spinner";
+import { toast } from "react-toastify";
 import { predict, buildGraph } from "../features/stock/stockSlice";
 
 function Dashboard() {
@@ -13,7 +14,7 @@ function Dashboard() {
     (state) => state.auth
   );
 
-  var ticker;
+  let ticker;
 
   useEffect(() => {
     if (isError) {
@@ -38,12 +39,16 @@ function Dashboard() {
   const handleClick = async () => {
     try {
       const data = await dispatch(predict(ticker));
-      buildGraph(
-        data.payload.ticker,
-        data.payload.dates,
-        data.payload.closePrices,
-        data.payload.meanPrices
-      );
+      if (data.payload.message) {
+        toast.error(data.payload.message);
+      } else {
+        buildGraph(
+          data.payload.ticker,
+          data.payload.dates,
+          data.payload.closePrices,
+          data.payload.meanPrices
+        );
+      }
     } catch (error) {
       console.log("handleClick error:", error);
     }
@@ -66,7 +71,8 @@ function Dashboard() {
           Predict
         </button>
       </div>
-      <div id="plot"></div>
+      <div id="plot">
+      </div>
     </div>
   );
 }

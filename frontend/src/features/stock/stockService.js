@@ -7,7 +7,8 @@ const predict = async (ticker) => {
   const response = await axios
     .post(API_URL + "predict", ticker)
     .catch((error) => {
-      console.log("axios error : ", error);
+      console.log("predict axios error : ", error.response);
+      return error.response;
     });
 
   return response.data;

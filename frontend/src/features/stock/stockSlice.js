@@ -6,6 +6,7 @@ const initialState = {
   stock: { ticker: "" },
   ticker: "",
   setText: "",
+  isLoading: false,
 };
 
 export const predict = createAsyncThunk(
@@ -33,12 +34,16 @@ export const stockSlice = createSlice({
   name: "stock",
   initialState,
   extraReducers: (builder) => {
-    builder.addCase(predict.fulfilled, (state, action) => {
-      state.stock = action.payload;
-    });
-    builder.addCase(buildGraph.fulfilled, (state, action) => {
-      state.stock = action.payload;
-    });
+    builder
+      .addCase(predict.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(predict.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(buildGraph.fulfilled, (state, action) => {
+        state.isLoading = false;
+      });
   },
 });
 

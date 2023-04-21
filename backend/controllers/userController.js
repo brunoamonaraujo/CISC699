@@ -64,7 +64,42 @@ const generateToken = (id) => {
   });
 };
 
+const updateUser = asyncHandler(async (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    res.status(400);
+    throw new Error("Missing fields");
+  }
+  const userExists = await User.findOne({ email });
+  if (!userExists) {
+    res.status(404);
+    throw new Error("This email doesn't exist in system");
+  }
+  const salt = await bcrypt.genSalt(8);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  const user = await User.updateOne({
+    name,
+    email,
+    password: hashedPassword,
+  });
+
+  if (user) {
+    res.status(201).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid user data");
+  }
+
+});
+
 module.exports = {
   createUser,
   login,
+  updateUser
 };
